@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geo-Fichaje | Iniciar Sesión</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #0ea5e9;
+            --brand-dark: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-input: #f8fafc;
+            --border-color: #e2e8f0;
+            --error-bg: #fef2f2;
+            --error-text: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #f1f5f9;
+        }
+
+        .contenedor-principal {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .panel-marca {
+            flex: 1;
+            background: linear-gradient(135deg, var(--brand-dark) 0%, #1e3a8a 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel-marca::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 60%);
+            top: -25%;
+            left: -25%;
+            z-index: 0;
+        }
+
+        .panel-marca h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            z-index: 1;
+            letter-spacing: -1px;
+        }
+
+        .panel-marca p {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #cbd5e1;
+            max-width: 380px;
+            z-index: 1;
+            line-height: 1.6;
+        }
+
+        .panel-login {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            position: relative;
+        }
+
+        .caja-login {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+
+        .caja-login h2 {
+            color: var(--text-main);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .caja-login > p {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .grupo-input {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .grupo-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Bordes más redondeados */
+            font-size: 1rem;
+            color: var(--text-main);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            background-color: #ffffff;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);
+        }
+
+        button:hover {
+            background-color: #0284c7;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(14, 165, 233, 0.3);
+        }
+
+        .error {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        @media (max-width: 850px) {
+            .contenedor-principal {
+                flex-direction: column;
+            }
+
+            .panel-marca {
+                flex: none;
+                padding: 60px 20px 80px 20px;
+            }
+
+            .panel-marca h1 {
+                font-size: 2.5rem;
+            }
+
+            .panel-login {
+                flex: 1;
+                align-items: flex-start;
+                background-color: transparent;
+            }
+
+            .caja-login {
+                background-color: #ffffff;
+                margin-top: -50px;
+                border-radius: 24px 24px 0 0;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+                padding: 40px 30px;
+                min-height: calc(100vh - 200px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <div class="panel-marca">
+            <h1>Geo-Fichaje</h1>
+            <p>Plataforma de gestión de presencia y geolocalización para tu equipo.</p>
+        </div>
+
+        <div class="panel-login">
+            <div class="caja-login">
+                <h2>Bienvenido de nuevo</h2>
+                <p>Introduce tu DNI para acceder a tu panel</p>
+
+                <!-- Bloque de Error -->
+                <div th:if="${mensajeError}" class="error">
+                    <span th:text="${mensajeError}">Las credenciales no son correctas.</span>
+                </div>
+
+                <!-- Formulario -->
+                <form th:action="@{/login}" method="post">
+                    <div class="grupo-input">
+                        <label for="dni">Documento de Identidad (DNI)</label>
+                        <input type="text" id="dni" name="dni" placeholder="Ej: 12345678A" required autocomplete="off">
+                    </div>
+                    
+                    <button type="submit">Entrar al Panel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Fichaje</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-dark: #0f172a;
+            --brand-primary: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --border-light: #e2e8f0;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            min-height: 100vh; 
+            background-color: var(--bg-body); 
+        }
+
+        .contenedor-principal {
+            display: flex;
+            width: 100%;
+            height: 100vh; /* CAMBIO: Cambiado de min-height a height para fijar la pantalla y activar el scroll interno a la derecha */
+        }
+
+        .panel-info {
+            flex: 0 0 35%;
+            background: linear-gradient(145deg, var(--brand-dark) 0%, #1e3a8a 100%);
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* CAMBIO: Cambiado de center a flex-start para que la info siempre empiece arriba */
+            position: relative;
+        }
+
+        .panel-info h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .panel-info > p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+            border-radius: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .stat-card p {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-card span.valor {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 5px;
+        }
+
+        .panel-accion {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 50px 40px;
+            overflow-y: auto;
+        }
+
+        .caja-accion {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        .alerta { 
+            padding: 15px 20px; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+            font-weight: 500; 
+            font-size: 0.95rem;
+        }
+        .exito { background-color: #d1fae5; color: #065f46; border-left: 4px solid var(--success); }
+        .error { background-color: #fee2e2; color: #991b1b; border-left: 4px solid var(--danger); }
+
+        #mapa { 
+            height: 280px; 
+            width: 100%; 
+            margin-top: 10px; 
+            background-color: #f1f5f9; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        
+        #info-ubicacion { 
+            color: var(--text-muted); 
+            font-size: 0.85rem; 
+            margin-top: 10px; 
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .botones-fichaje {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0 35px 0;
+        }
+
+        .botones-fichaje button { 
+            flex: 1;
+            padding: 16px; 
+            font-size: 1rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            border: none; 
+            border-radius: 10px; 
+            color: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .btn-entrada { background-color: var(--success); }
+        .btn-salida { background-color: var(--danger); }
+
+        .botones-fichaje button:hover:not(:disabled) {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -2px rgba(0,0,0,0.15);
+        }
+
+        .botones-fichaje button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);
+        }
+
+        .botones-fichaje button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        h3 {
+            color: var(--text-main);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--bg-body);
+            padding-bottom: 10px;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+
+        th, td { 
+            padding: 14px 15px; 
+            text-align: left;
+        }
+
+        th { 
+            background-color: var(--bg-body); 
+            color: var(--text-muted); 
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+        }
+
+        td { 
+            border-bottom: 1px solid var(--border-light); 
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        @media (max-width: 850px) {
+            .contenedor-principal { 
+                flex-direction: column; 
+                height: auto; /* CAMBIO: Restablecemos la altura automática en móviles para que haga scroll normal */
+                min-height: 100vh;
+            }
+            
+            .panel-info { 
+                flex: none; 
+                padding: 40px 20px 70px 20px;
+            }
+            .panel-info h2 { font-size: 1.8rem; }
+            
+            .stats-grid { flex-direction: row; gap: 10px; } 
+            .stat-card { flex: 1; padding: 15px; }
+            .stat-card span.valor { font-size: 1.3rem; }
+            
+            .panel-accion { 
+                padding: 0;
+                overflow-y: visible; /* CAMBIO: Desactivamos el scroll interno en móvil ya que scrollará todo el cuerpo */
+            }
+            
+            .caja-accion {
+                margin-top: -30px;
+                border-radius: 24px 24px 0 0;
+                padding: 45px 20px 30px 20px;
+                box-shadow: 0 -8px 20px rgba(0,0,0,0.15);
+                margin-bottom: 0;
+                min-height: calc(100vh - 250px);
+            }
+            
+            #mapa { height: 220px; }
+            
+            .botones-fichaje { flex-direction: column; gap: 12px; }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid { flex-direction: column; } 
+        }
+    </style>
+</head>
+<body onload="obtenerUbicacion()">
+
+    <div class="contenedor-principal">
+        
+        <div class="panel-info">
+            <h2>Hola, <span th:text="${empleado.nombre}">Nombre</span></h2>
+            <p>Resumen de tu actividad actual</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p>Días fichados este mes <span class="valor" th:text="${diasTrabajados}">0</span></p>
+                </div>
+                <div class="stat-card">
+                    <p>Horas trabajadas <span class="valor"><span th:text="${horasTrabajadas}">0</span>h</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-accion">
+            <div class="caja-accion">
+                
+                <div th:if="${mensajeExito}" class="alerta exito" th:text="${mensajeExito}"></div>
+                <div th:if="${mensajeError}" class="alerta error" th:text="${mensajeError}"></div>
+
+                <div id="mapa">Cargando mapa...</div>
+                <p id="info-ubicacion">Buscando tu ubicación GPS...</p>
+
+                <form class="botones-fichaje" th:action="@{/fichar}" method="post">
+                    <input type="hidden" name="dni" th:value="${empleado.dni}">
+                    <input type="hidden" name="latitud" id="inputLat">
+                    <input type="hidden" name="longitud" id="inputLon">
+                    
+                    <button type="submit" name="estado" value="ENTRADA" class="btn-entrada" id="btnEntrada" disabled>Fichar ENTRADA</button>
+                    <button type="submit" name="estado" value="SALIDA" class="btn-salida" id="btnSalida" disabled>Fichar SALIDA</button>
+                </form>
+
+                <h3>Tu historial de fichajes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="f : ${fichajes}">
+                            <td th:text="${#temporals.format(f.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                            <td th:text="${f.estado}" th:style="${f.estado == 'ENTRADA' ? 'color: #10b981; font-weight: 600;' : 'color: #ef4444; font-weight: 600;'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Variables globales para almacenar la ubicación del usuario
+        let latUsu = 0;
+        let lonUsu = 0;
+
+        // Función para obtener la ubicación del usuario
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError);
+            } else {
+                document.getElementById("info-ubicacion").innerHTML = "La geolocalización no está soportada por tu navegador.";
+            }
+        }
+
+        // Función que se ejecuta si la ubicación se obtiene correctamente
+        function mostrarPosicion(position) {
+            // Guardamos la latitud y longitud en las variables globales
+            latUsu = position.coords.latitude;
+            lonUsu = position.coords.longitude;
+
+            // Asignamos los valores a los campos ocultos del formulario
+            document.getElementById("inputLat").value = latUsu;
+            document.getElementById("inputLon").value = lonUsu;
+
+            document.getElementById("info-ubicacion").innerHTML = "Ubicación obtenida correctamente.";
+            
+            document.getElementById("btnEntrada").disabled = false;
+            document.getElementById("btnSalida").disabled = false;
+
+            // Inicializamos el mapa con la ubicación del usuario
+            initMap(latUsu, lonUsu);
+        }
+
+        // Función que se ejecuta si hay un error al obtener la ubicación
+        function mostrarError(error) {
+            document.getElementById("info-ubicacion").innerHTML = "Debes aceptar los permisos de ubicación para fichar.";
+        }
+
+        
+        function initMap(latitud, longitud) {
+
+            const miUbicacion = { lat: latitud, lng: longitud };
+            // Creamos el mapa centrado en la ubicación del usuario
+            const mapa = new google.maps.Map(document.getElementById("mapa"), {
+                zoom: 16,
+                center: miUbicacion,
+            });
+            // Colocamos un marcador en la ubicación del usuario
+            new google.maps.Marker({ position: miUbicacion, map: mapa, title: "Tú estás aquí" });
+        }
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgMRBkkqUCdnbeQPl4ZR-haqIejiWauCk&callback=console.log"></script>
+
+</body>
+</html>
